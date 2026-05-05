@@ -1,15 +1,100 @@
 {
-  "project": "84-14 Jamaica Avenue",
-  "address": "Queens, NY 11421",
-  "service": "1200A, 208Y/120V, 3PH, 4W",
-  "floors": ["ROOF", "4TH FL", "3RD FL", "2ND FL", "1ST FL", "CELLAR"],
-  "panels": {
-    "apartment": "150A",
-    "laundromat": "200A",
-    "house": "225A",
-    "mechanical": "100A",
-    "residential_meter_bank": "800A",
-    "mdb": "1200A"
+  "project": "179 22nd Street",
+  "address": "Brooklyn, NY 11232",
+  "service": "4000A, 208Y/120V, 3PH, 4W",
+  "drawing_no": "E-300",
+  "date": "05/04/2026",
+  "upper_floors": ["ROOF", "12TH FL", "11TH FL", "10TH FL", "9TH FL", "8TH FL", "7TH FL", "6TH FL", "5TH FL"],
+  "lower_floors": ["4TH FL", "3RD FL", "2ND FL", "1ST FL", "CELLAR"],
+  "upper_max_units_per_floor": 6,
+  "lower_max_units_per_floor": 9,
+  "units_by_floor": {
+    "1ST FL": ["AP-1A", "AP-1B", "AP-1C", "AP-1D", "AP-1E", "AP-1F", "AP-1G", "AP-1H"],
+    "2ND FL": ["AP-2A", "AP-2B", "AP-2C", "AP-2D", "AP-2E", "AP-2F", "AP-2G", "AP-2H", "AP-2I", "AP-2J"],
+    "3RD FL": ["AP-3A", "AP-3B", "AP-3C", "AP-3D", "AP-3E", "AP-3F", "AP-3G", "AP-3H", "AP-3I", "AP-3J"],
+    "4TH FL": ["AP-4A", "AP-4B", "AP-4C", "AP-4D", "AP-4E", "AP-4F", "AP-4G", "AP-4H", "AP-4I", "AP-4J"],
+    "5TH FL": ["AP-5A", "AP-5B", "AP-5C", "AP-5D", "AP-5E", "AP-5F", "AP-5G", "AP-5H", "AP-5I", "AP-5J"],
+    "6TH FL": ["AP-6A", "AP-6B", "AP-6C", "AP-6D", "AP-6E", "AP-6F", "AP-6G", "AP-6H", "AP-6I", "AP-6J"],
+    "7TH FL": ["AP-7A", "AP-7B", "AP-7C", "AP-7D", "AP-7E", "AP-7F", "AP-7G", "AP-7H"],
+    "8TH FL": ["AP-8A", "AP-8B", "AP-8C", "AP-8D", "AP-8E", "AP-8F", "AP-8G", "AP-8H"],
+    "9TH FL": ["AP-9A", "AP-9B", "AP-9C", "AP-9D", "AP-9E"],
+    "10TH FL": ["AP-10A", "AP-10B", "AP-10C", "AP-10D", "AP-10E"],
+    "11TH FL": ["AP-11A", "AP-11B", "AP-11C", "AP-11D", "AP-11S"],
+    "12TH FL": ["AP-12A", "AP-12B", "AP-12C", "AP-12D", "AP-12S"]
   },
-  "feeder_ids": ["F-0", "F-1", "F-1A", "F-2", "F-3", "F-4", "F-4A", "F-4B", "F-4C", "F-5", "F-6", "F-7", "F-8", "F-9", "F-10", "F-11"]
+  "roof_mechanical_loads": [
+    {"id": "F-4A", "name": "RTU-1", "rating": "60A", "ocp": "60A"},
+    {"id": "F-4B", "name": "SPF/SEF", "rating": "100A", "ocp": "100A"},
+    {"id": "F-4C", "name": "KX/CU", "rating": "200A", "ocp": "200A"},
+    {"id": "F-4D", "name": "ROOF LIGHT", "rating": "20A", "ocp": "20A"}
+  ],
+  "retail_branches": [
+    {"id": "F-2A", "name": "P-RC", "rating": "400A", "ocp": "400A"},
+    {"id": "F-2B", "name": "P-R1A", "rating": "225A", "ocp": "225A"},
+    {"id": "F-2C", "name": "P-R1B", "rating": "150A", "ocp": "150A"},
+    {"id": "F-2D", "name": "P-R1C", "rating": "150A", "ocp": "150A"},
+    {"id": "F-2E", "name": "P-CF", "rating": "150A", "ocp": "150A"}
+  ],
+  "elevator_branches": [
+    {"id": "F-7A", "name": "ELV-1 3500 LB", "rating": "100A", "ocp": "100A"},
+    {"id": "F-7B", "name": "ELV-2 SERVICE", "rating": "100A", "ocp": "100A"}
+  ],
+  "main_branches": [
+    {"id": "F-1", "name": "RMDP", "rating": "3000A"},
+    {"id": "F-2", "name": "RCDP", "rating": "600A"},
+    {"id": "F-3", "name": "HMDP", "rating": "800A"},
+    {"id": "F-4", "name": "P-M", "rating": "400A"},
+    {"id": "F-7", "name": "EDP", "rating": "225A"},
+    {"id": "F-5", "name": "FP TAP", "rating": "250A"}
+  ],
+  "house_branches": [
+    {"id": "F-3A", "name": "P-H", "rating": "400A", "ocp": "400A"},
+    {"id": "F-3B", "name": "FACP", "rating": "20A", "ocp": "20A"},
+    {"id": "F-3C", "name": "TEL/SEC", "rating": "20A", "ocp": "20A"},
+    {"id": "F-3D", "name": "GARAGE", "rating": "100A", "ocp": "100A"},
+    {"id": "F-3E", "name": "PUMPS", "rating": "100A", "ocp": "100A"},
+    {"id": "F-3F", "name": "COMP", "rating": "40A", "ocp": "40A"}
+  ],
+  "mechanical_branches": [
+    {"id": "F-8", "name": "EJECTOR/SUMP", "rating": "30A", "ocp": "30A"},
+    {"id": "F-9", "name": "DP-1 / PUMP", "rating": "30A", "ocp": "30A"},
+    {"id": "F-10", "name": "COMPACTOR", "rating": "40A", "ocp": "40A"},
+    {"id": "F-11", "name": "TEL/SEC", "rating": "20A", "ocp": "20A"}
+  ],
+  "feeder_schedule": [
+    {"id": "F-0", "source": "Utility / CT", "dest": "MDB", "rating": "4000A", "ocp": "Main", "conductors": "Per utility / EOR", "egc": "Per code", "raceway": "TBD", "notes": "Service entrance; utility coordination required"},
+    {"id": "F-1", "source": "MDB", "dest": "RMDP", "rating": "3000A", "ocp": "FDS", "conductors": "Parallel copper feeders", "egc": "Per NEC", "raceway": "TBD", "notes": "Residential meter stack"},
+    {"id": "F-1A", "source": "RMDP", "dest": "Apartment panels", "rating": "150A", "ocp": "FDS/CB", "conductors": "Prelim 1/0 Cu", "egc": "#6 Cu", "raceway": "1-1/2 in EMT", "notes": "Typical 120/208V 1PH apartment feeder"},
+    {"id": "F-2", "source": "MDB", "dest": "RCDP", "rating": "600A", "ocp": "FDS", "conductors": "Prelim parallel Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "Retail/community distribution"},
+    {"id": "F-3", "source": "MDB", "dest": "HMDP", "rating": "800A", "ocp": "FDS", "conductors": "Prelim parallel Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "House/common distribution"},
+    {"id": "F-4", "source": "MDB", "dest": "P-M", "rating": "400A", "ocp": "FDS", "conductors": "Prelim Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "Mechanical/roof panel"},
+    {"id": "F-5", "source": "Line side service tap", "dest": "FP CTRL", "rating": "250A", "ocp": "Fire pump service switch", "conductors": "Per NEC 695/EOR", "egc": "Per NEC", "raceway": "TBD", "notes": "Ahead of service disconnect; final per controller/AHJ"},
+    {"id": "F-6", "source": "FP CTRL", "dest": "Jockey", "rating": "30A", "ocp": "CB/FDS", "conductors": "#10 Cu", "egc": "#10 Cu", "raceway": "3/4 in EMT", "notes": "Preliminary"},
+    {"id": "F-7", "source": "MDB", "dest": "EDP", "rating": "225A", "ocp": "FDS", "conductors": "Prelim Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "Elevator distribution"}
+  ],
+  "design_basis": [
+    "4000A, 208Y/120V, 3PH, 4W service",
+    "Residential: 86 dwelling units",
+    "Apartment panels: 150A each",
+    "Two elevators: 100A each",
+    "Fire pump shown as line-side tap placeholder",
+    "EPR/utility review expected"
+  ],
+  "riser_notes": [
+    "All branch panels/equipment are tapped in parallel from source bus.",
+    "Panel boxes show ratings only; names are outside boxes.",
+    "Fire pump tap shown ahead of service disconnecting means.",
+    "Feeder labels correspond to feeder schedule.",
+    "Final AIC/SCCR/selective coordination by EOR."
+  ],
+  "feeder_reference": [
+    "F-0: Utility/CT to MDB",
+    "F-1/F-1A: residential riser/panels",
+    "F-2/F-2A-E: retail/CF panels",
+    "F-3/F-3A-F: house/common branches",
+    "F-4/F-4A-D: roof mechanical branches",
+    "F-5/F-6: fire pump / jockey",
+    "F-7/F-7A-B: elevator distribution",
+    "F-8/F-11: auxiliary branch loads"
+  ]
 }
