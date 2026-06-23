@@ -58,21 +58,23 @@ class SvgSheet:
         self.items.append(f'<text x="{x}" y="{y}" font-family="Arial" font-size="{size}" font-weight="{weight}" text-anchor="{anchor}"{transform}>{esc(value)}</text>')
 
     def fds_symbol(self, x: float, y: float, tag: str, amp: str = '') -> None:
-        # feeder tag on conductor + simplified fused disconnect symbol
-        self.rect(x - 38, y - 18, 76, 36, tag, size=15, bold=True)
-        self.line(x + 50, y, x + 112, y, 2)
-        self.line(x + 78, y + 12, x + 100, y - 12, 2)
-        self.rect(x + 112, y - 9, 18, 18, '', size=10)
+        # Inline simplified fused-disconnect symbol with feeder tag as plain text.
+        if tag:
+            self.text(x + 24, y - 48, tag, size=13, bold=True)
+        self.line(x, y - 64, x, y - 24, 2)
+        self.line(x - 15, y - 24, x + 15, y + 10, 2)
+        self.rect(x - 10, y + 10, 20, 28, '', size=10)
+        self.line(x, y + 38, x, y + 66, 2)
         if amp:
-            self.text(x + 93, y - 18, amp, size=12, anchor='middle')
+            self.text(x + 24, y + 30, amp, size=12)
 
     def panel_branch(self, x: float, y: float, rating: str, name: str, tag: str | None = None, amp: str = '20A') -> None:
         self.dot(x, y)
         if tag:
-            self.rect(x - 38, y - 45, 76, 32, tag, size=13, bold=True)
-        self.line(x, y, x, y + 38, 2)
-        self.text(x - 10, y + 24, amp, size=11, anchor='end')
-        self.line(x - 12, y + 28, x + 14, y + 10, 2)
+            self.text(x + 14, y - 20, tag, size=13, bold=True)
+        self.line(x, y, x, y + 50, 2)
+        if amp:
+            self.text(x + 14, y + 28, amp, size=11)
         self.rect(x - 45, y + 50, 90, 42, rating, size=17, bold=True)
         self.text(x, y + 112, name, size=12, bold=True, anchor='middle')
 
@@ -110,7 +112,7 @@ class SvgSheet:
         self.text(x + 205, 995, 'Fused disconnect switch', 10)
         self.line(x + 70, 1040, x + 170, 1040, 2)
         self.text(x + 205, 1045, 'Feeder / bus', 10)
-        self.rect(x + 75, 1075, 70, 36, 'F-X', 12, True)
+        self.text(x + 105, 1098, 'F-X', 12, True, 'middle')
         self.text(x + 205, 1098, 'Feeder designation', 10)
         self.line(x, 1160, PAGE_W - 18, 1160, 2)
         self.text(x + 55, 1200, 'FEEDER REFERENCE', 12, True)
@@ -133,11 +135,106 @@ class Drawio:
         self.cfg = cfg
         self.diagrams: List[str] = []
 
-    def add_svg_as_editable_hint(self, name: str, svg: str) -> None:
-        # Import-safe editable approximation: preserve SVG as XML comments and create a page shell.
-        # For fully native drawio, use the SVG as a guide and edit generated mxCells after import.
-        escaped = esc(svg[:200000])
-        xml = f'<mxGraphModel page="1" pageWidth="{PAGE_W}" pageHeight="{PAGE_H}"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="note" value="Native editable version generated from SVG source. See embedded SVG comments for exact geometry." style="text;html=1;strokeColor=none;fillColor=none;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="900" height="40" as="geometry"/></mxCell></root></mxGraphModel><!-- {escaped} -->'
+    def add_svg_as_native_cells(self, name: str, svg: str) -> None:
+        root = ET.fromstring(svg)
+        cells = ['<mxCell id="0"/>', '<mxCell id="1" parent="0"/>']
+        next_id = 2
+
+        def cell_id() -> str:
+            nonlocal next_id
+            value = f'c{next_id}'
+            next_id += 1
+            return value
+
+        def num(value: Any, default: float = 0) -> float:
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return default
+
+        def clean_color(value: str | None, default: str) -> str:
+            if not value or value == 'none':
+                return 'none'
+            return value
+
+        def local_name(tag: str) -> str:
+            return tag.rsplit('}', 1)[-1]
+
+        for elem in root.iter():
+            tag = local_name(elem.tag)
+            if tag == 'rect':
+                width_attr = elem.get('width')
+                height_attr = elem.get('height')
+                if not width_attr or '%' in width_attr or not height_attr or '%' in height_attr:
+                    continue
+                x = num(elem.get('x'))
+                y = num(elem.get('y'))
+                w = num(width_attr)
+                h = num(height_attr)
+                fill = clean_color(elem.get('fill'), '#ffffff')
+                stroke = clean_color(elem.get('stroke'), '#000000')
+                sw = num(elem.get('stroke-width'), 1)
+                style = f'rounded=0;whiteSpace=wrap;html=1;fillColor={fill};strokeColor={stroke};strokeWidth={sw};'
+                cells.append(
+                    f'<mxCell id="{cell_id()}" value="" style="{esc(style)}" vertex="1" parent="1">'
+                    f'<mxGeometry x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" as="geometry"/></mxCell>'
+                )
+            elif tag == 'circle':
+                cx = num(elem.get('cx'))
+                cy = num(elem.get('cy'))
+                r = num(elem.get('r'), 1)
+                fill = clean_color(elem.get('fill'), '#000000')
+                stroke = clean_color(elem.get('stroke'), fill)
+                style = f'ellipse;whiteSpace=wrap;html=1;fillColor={fill};strokeColor={stroke};'
+                cells.append(
+                    f'<mxCell id="{cell_id()}" value="" style="{esc(style)}" vertex="1" parent="1">'
+                    f'<mxGeometry x="{cx-r:g}" y="{cy-r:g}" width="{2*r:g}" height="{2*r:g}" as="geometry"/></mxCell>'
+                )
+            elif tag == 'line':
+                x1 = num(elem.get('x1'))
+                y1 = num(elem.get('y1'))
+                x2 = num(elem.get('x2'))
+                y2 = num(elem.get('y2'))
+                sw = num(elem.get('stroke-width'), 1)
+                dash = 'dashed=1;' if elem.get('stroke-dasharray') else ''
+                style = f'endArrow=none;html=1;rounded=0;strokeColor=#000000;strokeWidth={sw};{dash}'
+                cells.append(
+                    f'<mxCell id="{cell_id()}" value="" style="{esc(style)}" edge="1" parent="1">'
+                    '<mxGeometry width="50" height="50" relative="1" as="geometry">'
+                    f'<mxPoint x="{x1:g}" y="{y1:g}" as="sourcePoint"/>'
+                    f'<mxPoint x="{x2:g}" y="{y2:g}" as="targetPoint"/>'
+                    '</mxGeometry></mxCell>'
+                )
+            elif tag == 'text':
+                value = ''.join(elem.itertext()).strip()
+                if not value:
+                    continue
+                size = num(elem.get('font-size'), 14)
+                weight = elem.get('font-weight') or '400'
+                anchor = elem.get('text-anchor') or 'start'
+                x = num(elem.get('x'))
+                y = num(elem.get('y')) - size
+                width = max(50, len(value) * size * 0.65)
+                height = max(18, size * 1.6)
+                align = 'left'
+                if anchor == 'middle':
+                    x -= width / 2
+                    align = 'center'
+                elif anchor == 'end':
+                    x -= width
+                    align = 'right'
+                font_style = '1' if weight not in ('400', 'normal') else '0'
+                rotation = 'rotation=-90;' if elem.get('transform', '').startswith('rotate(-90') else ''
+                style = (
+                    'text;html=1;strokeColor=none;fillColor=none;whiteSpace=wrap;'
+                    f'align={align};verticalAlign=middle;fontSize={size:g};fontStyle={font_style};{rotation}'
+                )
+                cells.append(
+                    f'<mxCell id="{cell_id()}" value="{esc(value)}" style="{esc(style)}" vertex="1" parent="1">'
+                    f'<mxGeometry x="{x:g}" y="{y:g}" width="{width:g}" height="{height:g}" as="geometry"/></mxCell>'
+                )
+
+        xml = f'<mxGraphModel page="1" pageWidth="{PAGE_W}" pageHeight="{PAGE_H}"><root>{"".join(cells)}</root></mxGraphModel>'
         self.diagrams.append(f'<diagram name="{esc(name)}">{xml}</diagram>')
 
     def xml(self) -> str:
@@ -166,7 +263,7 @@ def draw_residential_rows(sheet: SvgSheet, units_by_floor: Dict[str, Sequence[st
         y = floor_y[floor] + 18
         names = list(names)
         show = names if max_units is None else names[:max_units]
-        sheet.rect(riser_x + 45, y - 30, 76, 32, 'F-1A', 12, True)
+        sheet.text(riser_x + 52, y - 12, 'F-1A', 12, True)
         sheet.line(riser_x, y, start_x + max(0, len(show) - 1) * step + 90, y, 2)
         sheet.dot(riser_x, y)
         for i, name in enumerate(show):
@@ -181,11 +278,14 @@ def draw_parallel_group(sheet: SvgSheet, title: str, x0: int, y: int, loads: Seq
     sheet.line(x0, y, x0 + max(1, len(loads))*step + 80, y, 2)
     for i, load in enumerate(loads):
         x = x0 + 70 + i * step
+        symbol_y = y + 95
+        panel_y = y + 150
         sheet.dot(x, y)
-        sheet.fds_symbol(x - 5, y + 60, load['id'], load.get('ocp', load.get('rating', '')))
-        sheet.line(x, y, x, y + 60, 2)
-        sheet.rect(x - 55, y + 122, 110, 55, load.get('rating', ''), 18, True)
-        sheet.text(x, y + 205, load.get('name', ''), 12, True, 'middle')
+        sheet.line(x, y, x, symbol_y - 64, 2)
+        sheet.fds_symbol(x, symbol_y, load['id'], load.get('ocp', load.get('rating', '')))
+        sheet.line(x, symbol_y + 66, x, panel_y, 2)
+        sheet.rect(x - 55, panel_y, 110, 55, load.get('rating', ''), 18, True)
+        sheet.text(x, panel_y + 83, load.get('name', ''), 12, True, 'middle')
 
 
 def make_upper_sheet(cfg: Dict[str, Any]) -> str:
@@ -237,7 +337,7 @@ def make_service_sheet(cfg: Dict[str, Any]) -> str:
     tap_x = 160
     sheet.line(tap_x, y, tap_x, y + 330, 2, '8 8')
     sheet.dot(tap_x, y + 140)
-    sheet.rect(tap_x + 30, y + 110, 92, 36, 'F-FP', 13, True)
+    sheet.text(tap_x + 30, y + 130, 'F-FP', 13, True)
     sheet.text(tap_x + 142, y + 130, 'FIRE PUMP TAP AHEAD OF SERVICE', 12, True)
     sheet.rect(tap_x + 30, y + 230, 210, 80, 'FP CTRL\n250A', 16, True)
     sheet.line(tap_x + 240, y + 270, tap_x + 395, y + 270, 2)
@@ -259,7 +359,7 @@ def make_service_sheet(cfg: Dict[str, Any]) -> str:
         sheet.line(x, bus_y, x, bus_y + 55, 2)
         sheet.rect(x - 45, bus_y + 66, 90, 58, br.get('rating',''), 15, True)
         sheet.text(x, bus_y + 150, br.get('name',''), 10, True, 'middle')
-        sheet.rect(x - 35, bus_y - 44, 70, 32, br.get('id',''), 12, True)
+        sheet.text(x + 12, bus_y - 20, br.get('id',''), 12, True)
     if cfg.get('house_branches'):
         draw_parallel_group(sheet, 'HMDP PARALLEL BRANCH LOADS', 330, 1420, cfg['house_branches'], 300)
     if cfg.get('mechanical_branches'):
@@ -329,7 +429,7 @@ def main() -> None:
         prefix.with_name(f'{prefix.name}_sheet{i}.svg').write_text(svg, encoding='utf-8')
     dio = Drawio(cfg)
     for name, svg in sheets:
-        dio.add_svg_as_editable_hint(name, svg)
+        dio.add_svg_as_native_cells(name, svg)
     prefix.with_suffix('.drawio').write_text(dio.xml(), encoding='utf-8')
     print(prefix.with_suffix('.svg'))
     print(prefix.with_suffix('.drawio'))

@@ -64,7 +64,7 @@
   "feeder_schedule": [
     {"id": "F-0", "source": "Utility / CT", "dest": "MDB", "rating": "4000A", "ocp": "Main", "conductors": "Per utility / EOR", "egc": "Per code", "raceway": "TBD", "notes": "Service entrance; utility coordination required"},
     {"id": "F-1", "source": "MDB", "dest": "RMDP", "rating": "3000A", "ocp": "FDS", "conductors": "Parallel copper feeders", "egc": "Per NEC", "raceway": "TBD", "notes": "Residential meter stack"},
-    {"id": "F-1A", "source": "RMDP", "dest": "Apartment panels", "rating": "150A", "ocp": "FDS/CB", "conductors": "Prelim 1/0 Cu", "egc": "#6 Cu", "raceway": "1-1/2 in EMT", "notes": "Typical 120/208V 1PH apartment feeder"},
+    {"id": "F-1A", "source": "RMDP", "dest": "Apartment panels", "rating": "150A", "ocp": "CB", "conductors": "Prelim 1/0 Cu", "egc": "#6 Cu", "raceway": "1-1/2 in EMT", "notes": "Typical 120/208V 1PH apartment feeder; no fused disconnect unless design basis requires it"},
     {"id": "F-2", "source": "MDB", "dest": "RCDP", "rating": "600A", "ocp": "FDS", "conductors": "Prelim parallel Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "Retail/community distribution"},
     {"id": "F-3", "source": "MDB", "dest": "HMDP", "rating": "800A", "ocp": "FDS", "conductors": "Prelim parallel Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "House/common distribution"},
     {"id": "F-4", "source": "MDB", "dest": "P-M", "rating": "400A", "ocp": "FDS", "conductors": "Prelim Cu", "egc": "Per NEC", "raceway": "TBD", "notes": "Mechanical/roof panel"},

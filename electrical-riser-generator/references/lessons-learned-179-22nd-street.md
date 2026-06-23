@@ -15,7 +15,7 @@ This reference captures practical improvements learned while developing the load
 
 - Do not stretch schedules to page width when the user wants a presentable engineering schedule. Use compact, centered schedules.
 - Show 2-pole and 3-pole loads occupying multiple consecutive circuit spaces with continuation rows.
-- Use A/B/C phase columns for 3-phase panels.
+- Use simple `X` marks in A/B/C phase columns for 3-phase panels.
 - Split large lighting/receptacle loads into multiple labeled circuits: `Lighting #1`, `Lighting #2`, `Receptacles #1`, `Receptacles #2`, etc.
 - Retail/community panels usually need more than one lighting and receptacle circuit even at preliminary stage.
 - Keep two elevator disconnects/panels separate when plans show two elevators.
