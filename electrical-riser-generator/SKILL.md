@@ -1,65 +1,163 @@
 ---
 name: electrical-riser-generator
-description: generate and revise preliminary electrical load-calculation narratives, panel schedules, single-line/riser diagrams, feeder schedules, and editable SVG/drawio outputs for multifamily or mixed-use building electrical design. use when asked to create dob-style electrical riser diagrams, service distribution diagrams, feeder tables, apartment panel schedules, or to review architectural/mechanical/plumbing/sprinkler/lighting plans for missing electrical loads and coordinated electrical deliverables.
+description: generate and revise preliminary electrical load calculations, compact panel schedules, feeder schedules, and coordinated single-line/riser diagrams with native editable SVG/drawio outputs. use for multifamily, mixed-use, retail, restaurant, warehouse, and transformer-fed projects where drawing sets must be reviewed and all deliverables must reconcile.
 ---
 
 # Electrical Riser Generator
 
-## Core workflow
+The controlling standard is `references/repeatable-deliverables-standard.md`. Read it before generating a package.
 
-1. **Collect and classify inputs**
-   - Separate file-supported facts from owner/user assumptions.
-   - Search uploaded plan sets and internal/source files when the user references drawings, schedules, PDFs, or prior generated worksheets.
-   - Keep separate load blocks for residential, commercial/tenant, house/common, mechanical, fire alarm/life safety, fire pump, elevators, and low-voltage/telecom/security.
+## Required workflow
 
-2. **Review plans for missing electrical loads**
-   - Architectural/sprinkler/plumbing plans: unit count, unit areas, cellar service spaces, pump/ejector symbols, fire pump schedule, roof/common areas, compactor room, meter rooms, and elevator count.
-   - Mechanical plans: ACCU/VRF, FCU, ERV, RTU/DOAS, fans, boilers, domestic electric water heaters, pump schedules, elevator/EMR equipment, and noncoincident heating/cooling notes.
-   - Lighting plans: use actual fixture wattage/counts where available; do not substitute area-based lighting when a fixture schedule exists.
+### 1. Review plans before drafting
 
-3. **Build the riser/single-line diagram**
-   - Use a true riser/single-line layout: floor lines, vertical risers, service entrance at cellar, main switchboard/distribution, meter bank, and floor-by-floor panel drops.
-   - Panel boxes must show **ratings only** (for example `150A`, `200A`, `225A`). Put panel names outside the boxes.
-   - Put feeder tags (`F-0`, `F-1`, etc.) on or near the feeder/wire, not inside the panel box.
-   - Show fused disconnect switches for feeder outputs where used; do not clutter apartment risers with circuit breaker symbols.
-   - Draw downstream panels/equipment as **parallel branches from their source bus or distribution panel**. Never daisy-chain retail, common, mechanical, elevator, pump, or apartment panels in series.
-   - For dense buildings, split the riser into multiple sheets: upper repetitive residential floors, lower residential/tenant floors, and cellar/service distribution. Keep feeder IDs continuous across sheets.
-   - Show fire pump supply as a line-side / ahead-of-service-disconnect tap when that is the selected preliminary arrangement, and flag final AHJ/utility/controller coordination.
-   - Show fire alarm primary power diagrammatically and flag final local-code coordination.
+Review every provided discipline and record findings before calculating:
 
-4. **Create panel schedules**
-   - Use compact centered schedules rather than page-width tables when the user wants a polished schedule style.
-   - Show 2-pole and 3-pole loads occupying multiple consecutive circuit positions with continuation rows.
-   - Split large retail/community lighting and receptacle loads into multiple circuits such as `Lighting #1`, `Lighting #2`, `Receptacles #1`, `Receptacles #2`, etc.
-   - Cross-check panel ratings, elevator count, service size, and large loads against the latest load letter before issuing.
+- Architectural: floors, rooms, tenant/unit layout, service/electrical rooms, actual panel locations, roof/cellar/mezzanine areas.
+- Mechanical: ACCU/VRF, FCU, ERV, RTU/DOAS, refrigeration, fans, pumps, boilers, water heaters, kitchen hoods and exhaust.
+- Plumbing/fire protection: fire pump, jockey pump, sump/ejector, domestic water equipment and special loads.
+- Electrical/lighting: service, metering, one-line/riser, panel schedules, feeder notes, fixture quantities and wattages.
+- Owner equipment lists: treat as owner data, not nameplate data.
 
-5. **Create feeder schedules**
-   - Include feeder ID, source, destination, rating, OCP/disconnect, conductors, EGC, raceway, and notes.
-   - Size preliminary feeders consistently using copper conductors, 75C terminals, EMT, and the applicable NEC/NYC Electrical Code edition unless the user directs otherwise.
-   - Cross-check feeder ratings against the riser, panel schedules, and load letter before issuing.
+Do not begin the final load calculation until a source register exists.
 
-6. **Deliver editable outputs**
-   - Provide at least one review PDF plus one editable format. Preferred editable formats are SVG and diagrams.net `.drawio`.
-   - The `.drawio` must use native editable cells, not a single embedded background image.
-   - When the user wants manual fine tuning, package the editable SVG/drawio plus the PDF and feeder table into a ZIP.
-   - State clearly what remains preliminary: utility service arrangement, fault current/AIC, selective coordination, voltage drop, final equipment MCA/MOCP, conductor derating, and EOR sign-off.
+### 2. Build a source and assumptions register
 
-## Quality checks before final response
+For every load, record:
 
-- No overlapping text, line labels, feeder tags, boxes, or symbols.
-- Feeder lines are continuous and visibly connected.
-- Parallel loads branch from a source bus or distribution panel, not from each other in series.
-- All panel boxes are complete closed shapes.
-- All panel ratings match the latest panel schedule and load calculation.
-- Elevator count matches the plans; separate service/passenger elevators if both are shown.
-- Fire pump is shown ahead of service tap when required by the current design basis.
-- Commercial/tenant loads are calculated when area/HVAC/equipment data are available; use owner-directed placeholders only when explicitly directed.
-- Feeder schedule is generated and IDs match the riser labels.
-- EPR/utility/code notes are included when service size, kVA, voltage, fire pump, or service room cooling triggers are relevant.
+- Canonical load ID.
+- Description and quantity.
+- Source file/sheet/location.
+- Voltage, phase, poles, watts/VA/kVA, FLA/MCA/MOCP when available.
+- Serving panel and physical location.
+- Status: `PLAN`, `SCHEDULE`, `OWNER`, `ASSUMED`, or `FIELD VERIFY`.
+- Conflict/coordination notes.
+
+No load enters the calculation unless it is in this register. Run `scripts/validate_project.py` before issuing.
+
+### 3. Calculate loads without conflating ratings
+
+Keep these values separate:
+
+- Existing service rating.
+- Panel bus/main rating.
+- Feeder/OCP rating.
+- Connected load.
+- Demand load.
+- Calculated current.
+
+The sum of downstream panel ratings is not the service load. A reported 400A service stays 400A unless the service itself is being changed.
+
+Use this evidence order:
+
+1. Equipment schedule/nameplate.
+2. Electrical plan/riser/panel data.
+3. Mechanical/plumbing/lighting/architectural plans.
+4. Owner list.
+5. Explicit preliminary assumption.
+
+Use actual fixture wattage/counts and equipment MCA where available. Use MOCP only for OCP selection. Generic circuit-capacity allowances must be labeled and must not duplicate scheduled equipment.
+
+Before totaling, deduplicate owner entries against mechanical schedules. Apply largest-motor, continuous-load, and noncoincident-load rules explicitly and only where applicable.
+
+Report connected kVA, demand kVA, calculated current, service capacity, utilization, and remaining capacity. If existing building load is unknown, do not declare the service adequate without field demand information or an approved existing-load method.
+
+### 4. Generate optimized panel schedules
+
+Use the compact blue-header style.
+
+Required header data:
+
+- Panel name/description.
+- Location.
+- Mains/bus rating.
+- Voltage, phase, wires.
+- Mounting.
+- AIC/SCCR status.
+- Source feeder ID.
+
+Required circuit-table order:
+
+`CKT | DESCRIPTION | BREAKER | A | B | C | BREAKER | DESCRIPTION | CKT`
+
+Rules:
+
+- A/B/C columns use `X` marks only.
+- 2P and 3P breakers occupy consecutive circuit positions.
+- Continuation rows show `(description cont.)` and no repeated breaker rating.
+- Preserve exact plan equipment names.
+- Split lighting/receptacle groups into multiple circuits where needed.
+- Balance 1P loads across A/B/C and rotate 2P loads across AB/BC/CA.
+- Report phase totals and flag imbalance over 10% unless another threshold is specified.
+
+### 5. Generate the feeder schedule
+
+Minimum columns:
+
+`ID | Source | Destination | Rating | OCP/Disconnect | Conductors | EGC | Raceway | Load basis | Notes`
+
+Every riser feeder label must have exactly one table row, and every table row must appear on the riser. Cross-check service, panel, feeder, and OCP ratings independently.
+
+Use copper conductors, 75C terminals, and EMT only as an explicitly stated preliminary basis unless directed otherwise. Transformer, motor, tap, and fire-pump feeders require their applicable special rules.
+
+### 6. Build the riser/single-line
+
+Use a true single-line layout with actual floors and actual panel locations.
+
+Drawing rules:
+
+- Panel boxes contain ratings only; names are outside.
+- Feeder IDs and ratings are directly beside conductor runs.
+- Fused disconnect symbols are inline and connected on both ends.
+- No floating disconnects or open-ended feeders.
+- Remote panels appear only at their actual serving location.
+- Service/electrical rooms show feeder disconnects/callouts, not duplicate remote panels.
+- All branch panels/equipment connect in parallel from their source bus.
+- Never daisy-chain unrelated panels or equipment.
+- Transformer workflow: source -> primary OCP/disconnect -> transformer -> secondary protection/tap arrangement -> destination panels.
+- Any transformer not shown in the plans must be labeled `ASSUMED - FIELD VERIFY`.
+- Do not invent an intermediate panel for drafting convenience.
+
+For dense projects, split into multiple sheets and keep feeder IDs continuous.
+
+### 7. Deliver truly editable files
+
+Issue at least one PDF and one editable format. Preferred package:
+
+- Load calculation DOCX/PDF.
+- Panel schedules DOCX/PDF.
+- Riser plus feeder schedule PDF.
+- Native editable `.drawio`.
+- Editable SVG.
+- Feeder schedule XLSX/CSV.
+- Source/assumptions register.
+- Full ZIP.
+
+The `.drawio` must contain native editable `mxCell` objects for all lines, labels, boxes, buses, and symbols. Embedded images, SVG backgrounds, or XML comments are not acceptable substitutes. The drawio, SVG, and PDF must match visually and logically.
+
+## Mandatory QA before issue
+
+- Source register complete; no duplicate canonical load IDs.
+- Connected/demand totals reconcile.
+- Service rating is not confused with downstream panel ratings.
+- Panel ratings match riser and feeder schedule.
+- Feeder IDs are one-to-one across all outputs.
+- Multi-pole rows are consecutive and phase-correct.
+- Phase balance is reported.
+- Assumed transformers and equipment are visibly labeled.
+- No invented panels remain.
+- All lines and disconnect symbols are visibly connected.
+- Native drawio opens with editable objects and matches SVG/PDF.
+- DOCX and PDF files are rendered and visually inspected.
+- XLSX formulas recalculate without errors.
+- Final caveats identify utility/service arrangement, AIC/SCCR, selective coordination, voltage drop, derating, final MCA/MOCP, code edition, and EOR/AHJ sign-off.
 
 ## Bundled resources
 
-- `references/riser-style-guide.md`: style and coordination checklist for DOB-style riser diagrams and feeder tables.
-- `references/lessons-learned-179-22nd-street.md`: practical lessons from the 179 22nd Street sprint, including multi-sheet layout and parallel branch corrections.
-- `scripts/build_editable_riser.py`: configurable SVG/drawio generator template for editable multi-sheet riser diagrams and feeder schedules.
-- `assets/sample_project_config.json`: example project configuration that can be copied and modified for a new building.
+- `references/repeatable-deliverables-standard.md`: controlling production and QA standard.
+- `references/riser-style-guide.md`: drawing and schedule conventions.
+- `references/lessons-learned-179-22nd-street.md`: dense mixed-use project lessons.
+- `scripts/validate_project.py`: coordination validator.
+- `scripts/build_editable_riser.py`: legacy multi-sheet generator; native drawio output must be verified before use.
+- `assets/optimized_retail_project_config.json`: example showing service/panel/load separation and coordinated feeder IDs.
+- `assets/sample_project_config.json`: legacy multifamily example.

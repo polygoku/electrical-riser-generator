@@ -1,0 +1,149 @@
+{
+  "project": "Example Retail Project",
+  "revision": "Rev1",
+  "service": {
+    "rating_a": 400,
+    "voltage": 208,
+    "phases": 3,
+    "wires": 4,
+    "status": "OWNER",
+    "notes": "Existing service rating reported by owner; field verify."
+  },
+  "load_summary": {
+    "connected_kva": 75.6,
+    "demand_kva": 75.6,
+    "demand_a": 209.9,
+    "service_utilization_percent": 52.5
+  },
+  "source_register": [
+    {
+      "load_id": "LTG-01",
+      "description": "Scheduled lighting",
+      "source": "Lighting schedule",
+      "quantity": 1,
+      "voltage": 120,
+      "phases": 1,
+      "connected_kva": 0.338,
+      "panel": "P-L",
+      "status": "SCHEDULE",
+      "notes": "Use actual fixture wattage and quantity."
+    },
+    {
+      "load_id": "KIT-120-ALLOW",
+      "description": "Eleven 120V kitchen branch allowances",
+      "source": "Owner equipment list",
+      "quantity": 11,
+      "voltage": 120,
+      "phases": 1,
+      "connected_kva": 26.4,
+      "panel": "P-K",
+      "status": "OWNER",
+      "notes": "2.40 kVA per circuit pending nameplates."
+    },
+    {
+      "load_id": "KIT-208-ALLOW",
+      "description": "Five 208V kitchen/HVAC branch allowances",
+      "source": "Owner equipment list",
+      "quantity": 5,
+      "voltage": 208,
+      "phases": 1,
+      "connected_kva": 20.8,
+      "panel": "P-K",
+      "status": "OWNER",
+      "notes": "4.16 kVA per circuit pending nameplates; confirm no duplication with scheduled mechanical equipment."
+    }
+  ],
+  "panels": [
+    {
+      "name": "P-K",
+      "description": "Kitchen equipment panel",
+      "location": "Retail kitchen",
+      "rating_a": 200,
+      "main_a": 200,
+      "voltage": 208,
+      "phases": 3,
+      "wires": 4,
+      "status": "ASSUMED",
+      "source_feeder": "F-1"
+    },
+    {
+      "name": "P-M",
+      "description": "Mechanical panel",
+      "location": "Retail/mechanical area",
+      "rating_a": 125,
+      "main_a": 125,
+      "voltage": 208,
+      "phases": 3,
+      "wires": 4,
+      "status": "ASSUMED",
+      "source_feeder": "F-2"
+    },
+    {
+      "name": "P-L",
+      "description": "Lighting and receptacle panel",
+      "location": "Retail area",
+      "rating_a": 100,
+      "main_a": 100,
+      "voltage": 208,
+      "phases": 3,
+      "wires": 4,
+      "status": "ASSUMED",
+      "source_feeder": "F-3"
+    }
+  ],
+  "feeders": [
+    {
+      "id": "F-0",
+      "source": "Existing service",
+      "destination": "MDP",
+      "destination_type": "service",
+      "rating_a": 400,
+      "ocp": "Existing 400A main - verify",
+      "conductors": "Existing - field verify",
+      "egc": "Existing - field verify",
+      "raceway": "Existing - field verify",
+      "notes": "Service remains 400A; downstream panel ratings do not add arithmetically to service load."
+    },
+    {
+      "id": "F-1",
+      "source": "MDP",
+      "destination": "P-K",
+      "destination_type": "panel",
+      "rating_a": 200,
+      "ocp": "200A/3P SFDS or MCCB",
+      "conductors": "4#3/0 Cu",
+      "egc": "#6 Cu",
+      "raceway": "2 in. EMT",
+      "notes": "Kitchen feeder; final size and voltage drop by EOR."
+    },
+    {
+      "id": "F-2",
+      "source": "MDP",
+      "destination": "P-M",
+      "destination_type": "panel",
+      "rating_a": 125,
+      "ocp": "125A/3P SFDS or MCCB",
+      "conductors": "4#1 Cu",
+      "egc": "#8 Cu",
+      "raceway": "1-1/2 in. EMT",
+      "notes": "Mechanical feeder; verify MCA/MOCP."
+    },
+    {
+      "id": "F-3",
+      "source": "MDP",
+      "destination": "P-L",
+      "destination_type": "panel",
+      "rating_a": 100,
+      "ocp": "100A/3P SFDS or MCCB",
+      "conductors": "4#3 Cu",
+      "egc": "#8 Cu",
+      "raceway": "1-1/4 in. EMT",
+      "notes": "Lighting/receptacle feeder."
+    }
+  ],
+  "riser": {
+    "feeder_ids": ["F-0", "F-1", "F-2", "F-3"],
+    "topology": "Existing service -> MDP -> parallel feeders to P-K, P-M, and P-L"
+  },
+  "transformers": []
+}
