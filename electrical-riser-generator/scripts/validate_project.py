@@ -21,6 +21,11 @@ REQUIRED_FEEDER_FIELDS = {
     "id", "source", "destination", "rating_a", "ocp", "conductors", "egc", "raceway"
 }
 VALID_STATUS = {"PLAN", "SCHEDULE", "OWNER", "ASSUMED", "FIELD VERIFY"}
+VALID_DISCONNECT_KINDS = {
+    "fused", "fds", "sfds", "fused_disconnect",
+    "non_fused", "nonfused", "nfd", "lds", "switch", "non_fused_disconnect",
+}
+VALID_DISCONNECT_ORIENTATIONS = {"right", "down", "left", "up"}
 
 
 def error(errors: list[str], message: str) -> None:
@@ -80,6 +85,29 @@ def validate(cfg: dict[str, Any]) -> list[str]:
         error(errors, f"Feeders missing from riser: {missing_on_riser}")
     if extra_on_riser:
         error(errors, f"Riser feeder labels missing from feeder schedule: {extra_on_riser}")
+
+    for edge in cfg.get("riser", {}).get("edges", []):
+        disconnect = edge.get("disconnect")
+        if not disconnect or disconnect is True:
+            continue
+        if isinstance(disconnect, str):
+            kind = disconnect
+            orientation = None
+            at = None
+        elif isinstance(disconnect, dict):
+            kind = disconnect.get("kind", "fused")
+            orientation = disconnect.get("orientation")
+            at = disconnect.get("at")
+        else:
+            error(errors, f"Riser edge {edge.get('id')} has invalid disconnect definition")
+            continue
+        normalized_kind = str(kind).strip().lower().replace("-", "_")
+        if normalized_kind not in VALID_DISCONNECT_KINDS:
+            error(errors, f"Riser edge {edge.get('id')} has unsupported disconnect kind {kind!r}")
+        if orientation and orientation not in VALID_DISCONNECT_ORIENTATIONS:
+            error(errors, f"Riser edge {edge.get('id')} has unsupported disconnect orientation {orientation!r}")
+        if at is not None and (not isinstance(at, list) or len(at) != 2 or not all(isinstance(v, (int, float)) for v in at)):
+            error(errors, f"Riser edge {edge.get('id')} disconnect 'at' must be a two-number list")
 
     loads_by_panel: dict[str, float] = defaultdict(float)
     for row in source_rows:

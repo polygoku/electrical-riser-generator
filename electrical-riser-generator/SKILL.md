@@ -108,7 +108,8 @@ Drawing rules:
 
 - Panel boxes contain ratings only; names are outside.
 - Feeder IDs and ratings are directly beside conductor runs.
-- Fused disconnect symbols are inline and connected on both ends.
+- Fused disconnect symbols follow the Eaton combination convention: fuse first, then the open switch in the direction of power flow. Rotate the complete symbol with the feeder and keep it inline and connected on both ends.
+- Non-fused disconnects use the open-switch portion only. Device labels and the feeder schedule must distinguish `FDS`/`SFDS` from `NFD`/`LDS`.
 - No floating disconnects or open-ended feeders.
 - Remote panels appear only at their actual serving location.
 - Service/electrical rooms show feeder disconnects/callouts, not duplicate remote panels.

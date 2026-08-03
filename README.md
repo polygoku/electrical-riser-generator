@@ -23,7 +23,7 @@ Reusable ChatGPT Skill for producing coordinated preliminary electrical load cal
 5. Deduplicate owner equipment lists against scheduled mechanical equipment.
 6. Generate compact blue-header panel schedules with X-only phase columns and consecutive continuation rows for 2P/3P breakers.
 7. Generate a feeder schedule whose IDs match the riser one-to-one.
-8. Draw parallel branches from source buses, inline connected fused-disconnect symbols, actual panel locations, and no invented intermediate panels.
+8. Draw parallel branches from source buses, inline connected disconnect symbols, actual panel locations, and no invented intermediate panels. Use the Eaton fuse-then-open-switch combination for FDS/SFDS devices, rotate it with power flow, and use the open-switch portion only for NFD/LDS devices.
 9. Label assumed transformers and equipment `ASSUMED - FIELD VERIFY`.
 10. Validate the project before issue and visually inspect DOCX/PDF/SVG/drawio outputs.
 

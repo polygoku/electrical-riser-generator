@@ -48,3 +48,15 @@ def test_panel_overload_fails():
     cfg["panels"][0]["rating_a"] = 50
     errors = MODULE.validate(cfg)
     assert any("exceeds 50A rating" in item for item in errors)
+
+
+def test_disconnect_kind_and_orientation_are_validated():
+    cfg = load_example()
+    cfg["riser"]["edges"] = [{
+        "id": "F-1",
+        "disconnect": {"kind": "mystery", "orientation": "sideways", "at": [100]},
+    }]
+    errors = MODULE.validate(cfg)
+    assert any("unsupported disconnect kind" in item for item in errors)
+    assert any("unsupported disconnect orientation" in item for item in errors)
+    assert any("two-number list" in item for item in errors)
