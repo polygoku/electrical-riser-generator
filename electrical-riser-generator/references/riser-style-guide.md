@@ -7,7 +7,10 @@
 - Use one-line representation for power conductors.
 - Label each feeder with `F-#` near the conductor.
 - Keep panel boxes simple; ratings inside, names outside.
-- Use fused disconnect switch symbols at feed-outs from MDB/RMDP/house/mechanical panels when the diagram requires disconnect/fuse callouts.
+- Use the Eaton/Cutler-Hammer combination symbol when a fused disconnect is required: fuse first, then the open disconnect blade in the direction of power flow. Reference: https://www.newark.com/pdfs/techarticles/eatonCH/ElectricalSymbols.pdf
+- Rotate the complete symbol with the feeder direction. Do not mirror or reorder its fuse and switch components.
+- Use only the open disconnect-switch portion for a non-fused disconnect. Label the device `FDS`, `SFDS`, `NFD`, or `LDS` so the symbol and feeder schedule agree.
+- Place every disconnect inline on its feeder, with visible conductor continuity to both device terminals.
 - Keep mechanical downstream loads parallel from P-M or the applicable panel.
 - Keep house/common downstream loads parallel from P-H or the applicable panel.
 - Keep retail/community facility panels parallel from RCDP or the applicable retail distribution panel.
@@ -68,6 +71,7 @@ Keep feeder numbering continuous across sheets. Add matchline notes such as `CON
 - Do not draw feeder lines from one downstream panel to the next.
 - For house, mechanical, retail, and elevator groups, label the bus such as `HMDP PARALLEL BRANCH LOADS`, `P-M ROOF MECHANICAL LOADS - PARALLEL`, or `EDP ELEVATOR LOADS - PARALLEL`.
 - Place feeder tags at each branch conductor before the disconnect/panel box.
+- For vertical branches, orient the fuse and switch vertically in top-to-bottom power-flow order. Do not place a horizontal switch symbol beside a vertical feeder.
 
 ## Panel schedule conventions
 

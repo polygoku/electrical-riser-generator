@@ -147,7 +147,8 @@ Rules:
 - Panel boxes show ratings only; names are outside boxes.
 - Feeder IDs and ratings sit directly beside conductor runs.
 - Fused disconnect symbols are inline and connected at both ends.
-- Use the switch-fuse-disconnector symbol consistently in the legend and diagram.
+- Use the Eaton/Cutler-Hammer combination symbol consistently in the legend and diagram: fuse first, then an open disconnect blade in the direction of power flow. Rotate the complete symbol with the feeder; never mirror or reorder the components. Reference: https://www.newark.com/pdfs/techarticles/eatonCH/ElectricalSymbols.pdf
+- A non-fused disconnect uses the open disconnect-switch portion without the fuse body. The symbol label and feeder schedule must explicitly distinguish `FDS`/`SFDS` from `NFD`/`LDS`.
 - No floating disconnects, open-ended feeders, or duplicate remote panels.
 - Remote panels appear only at their actual serving location.
 - Service/electrical rooms show feeder disconnects and callouts, not duplicate panel boxes.
@@ -181,6 +182,7 @@ Before issue, validate all of the following:
 - Transformer assumptions are labeled.
 - No invented panels remain.
 - All lines and symbols are visibly connected.
+- Disconnect orientation follows each feeder's power-flow direction, and fused symbols preserve fuse-before-switch order.
 - Drawio is natively editable and visually matches SVG/PDF.
 - DOCX and PDF outputs are rendered and visually inspected.
 - Spreadsheet formulas recalculate without errors.
